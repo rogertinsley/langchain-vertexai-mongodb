@@ -1,0 +1,24 @@
+  services:
+  
+    mongo:
+      hostname: mongo
+      image: mongodb/mongodb-atlas-local:latest
+      privileged: true
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ./docker/mongo-entrypoint:/docker-entrypoint-initdb.d
+        - mongodb_data:/data/db
+        - mongodb_config:/data/configdb
+        - mongodb_mongot:/data/mongot
+      environment:
+        - MONGODB_INITDB_ROOT_USERNAME=root
+        - MONGODB_INITDB_ROOT_PASSWORD=password
+      ports:
+        - 27017:27017
+      healthcheck:
+        test: mongosh --quiet --eval 'db.runCommand("ping").ok'
+        interval: 10s
+        timeout: 10s
+        retries: 5
+      networks:
+        internal:
